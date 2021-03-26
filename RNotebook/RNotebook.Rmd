@@ -10,30 +10,25 @@ output:
     toc: yes
     highlight: tango
     theme: paper
+  pdf_document:
+    toc: yes
 ---
 
 # Einführung
 
 -   ggplot2 basiert auf der Idee der "grammar of graphics"
-
 -   Demnach lässt sich jede Grafik aufbauen als Kombination von
-
     -   Daten
-
     -   Koordinatensystem
-
     -   "geoms"
 
 -   "geoms" sind dabei visuelle Repräsentationen der Daten (Punkte, Kreise, Flächen, Linien, etc)
-
 -   "geoms" haben Eigenschaften (sog. "aesthetics"), z.B. größe, farbe, x- und y-Position etc.
-
 -   die Daten werden auf die "aesthetics" gemapped\
 
 # Datenpräsentation: geom
 
 -   Art der visuellen Präsentation der Daten
-
     -   Balken
     -   Kreis
     -   Linien
@@ -42,14 +37,11 @@ output:
     -   etc.
 
 -   kann grob unterteilt werden in:
-
     -   Univariat
-
         -   diskret (faktor)
         -   stetig
 
     -   Bivariat
-
         -   x und y diskret
         -   x oder y diskret
         -   x und y stetig
@@ -102,6 +94,9 @@ plot +
 ```{r}
 plot +
   geom_smooth(method = "lm", aes(x = hp, y = mpg))
+
+plot +
+  stat_smooth(method = "lm", aes(x = hp, y = mpg))
 ```
 
 ### Funktion
@@ -110,7 +105,8 @@ plot +
 fun <- function(x) {0.1 * x^3 + 1.4 * x^2 - 4 * x}
 
 ggplot() +
-  stat_function(fun = fun, xlim = range(-15, 10))
+#  stat_function(fun = fun, xlim = range(-15, 10)) +
+  geom_function(fun = fun, xlim = range(-15, 10))
 ```
 
 ### Zeitreihenplots
@@ -195,7 +191,7 @@ plot
 
 -   ggplot unterscheidet i.d.R. selbständig zwischen diskreter und stetiger Skalierung, dies kann dennoch auch vorgegeben werden
 
--   interessanter an dieser Stelle: Skalierung erlaubt beeinflussung von Darstellungsbereich, "Breaks", Achsen-skalierung, etc.
+-   interessanter an dieser Stelle: Skalierung erlaubt Beeinflussung von Darstellungsbereich, "Breaks", Achsen-Skalierung, etc.
 
 ### Achsenskalierung
 
@@ -204,14 +200,17 @@ data("economics", package = "ggplot2")
 
 plot <- ggplot(economics, aes(x = date, y = unemploy)) +
   geom_line()
+
 plot +
   scale_y_log10()
-```
 
-```{r}
 plot +
   scale_y_sqrt()
+```
 
+Hier sieht man wie sich einfach durch addition der entsprechenden `scale_*` Funktion ein z.B. logarythmisches oder Wurzel-Skalenniveau auf der Y-Achse umsätzen lässt.
+
+```{r}
 plot +
   scale_y_reverse()
 ```
@@ -271,6 +270,8 @@ plot <- ggplot(data = data) +
 plot
 ```
 
+Einfache Umsetzung von Farben in einer Grafik. Hier müssen für jedes Dataset das Attribut "color" konstant auf einen Wert gesetzt werden. Für aufwändige Grafiken empfiehlt es sich das Attribut "color" datengetrieben zu befühlen.
+
 ## Benutzung von fill, color und group
 
 ```{r}
@@ -286,6 +287,8 @@ plot <- ggplot(data = data) +
 plot
 ```
 
+Hier wurde die Datentabelle um eine Variable `Gruppe` ergänzt, welche den entsprechenen Datensatz einer Gruppe zuordnet. Das `color` Attribut wird hier nun innerhalb der `aes` Funktion zugewiesen. Anstatt die Farbe konstant für einen Datensatz zu setzen, kann ggplot nun Automatische die Gruppenzugehörigkeit bestimmen. Den Gruppen werden dann automatisch Farben zugewiesen (i.d.R. rot und blau). Die Farbzuweisung kann nun über eine anpassung der "Farbskala" umgesetzt werden, dabei wird jeder spezifische Gruppenwert auf einen Farbwert gemappt.
+
 ```{r}
 data$Group2 <- factor(ifelse(data$X > mean(data$X), "Group1", "Group2"))
 
@@ -295,6 +298,8 @@ plot <- ggplot(data = data) +
   scale_fill_manual(values = c("Group1" = "blue", "Group2" = "orange"))
 plot
 ```
+
+Hier sieht man ein Beispiel, wie sich mehrere Gruppen dazu nutzen lassen mehrere Attribute (hier Füllfarbe und Linienfarbe) datengetrieben zu beeinflussen.
 
 ```{r}
 plot <- ggplot(data = data, aes(x = X, y = Y, shape = Group2, color = Group)) +
@@ -333,7 +338,7 @@ head(data.long)
 
 -   ggplot arbeitet besser mit long-Datenstrukturen
 
--   arbeiten mit der intuitiveren wide Struktur ebenfalls möglich, jedoch kann dies häufig wesentlich aufwändiger sein, da bei dem fill-Attribut dann für jede Gruppe eine eigene Zeile verwendet werden muss
+-   arbeiten mit der intuitiven wide Struktur ebenfalls möglich, jedoch kann dies häufig wesentlich aufwändiger sein, da bei dem fill-Attribut dann für jede Gruppe eine eigene Zeile verwendet werden muss
 
 -   dank einigen automatisierten Funktionen lassen sich wide-Struckturen relativ unaufwändig in long-Struckturen überführen
 
@@ -415,9 +420,13 @@ plot +
   theme_void()
 ```
 
+Mit den vorgefertigten Themes lässt sich schnell das Aussehend er Grafik an die eigenen Wünsche anpassen. Es lassen sich aber auch noch viele weitere, sehr viel detailliertere änderungen an dem Aussehend er Grafik tätigen.
+
 ## Weitere Optionen
 
 ### Legende
+
+Im Allgemeinen wird die Legende automatisch von ggplot erstellt, wenn eine Variable auf aesthetics wie `group` `color`, `fill` etc. gemapped wird. Hier soll stattdessen veranschaulicht werden wie sich die Legende (als Beispiel für ein Grafikelement) sehr tiefgreifend an die eigenen Bedürfnisse anpassen lässt.
 
 ```{r}
 plot +
@@ -430,9 +439,13 @@ plot +
         legend.background = element_rect(colour = "grey"))
 ```
 
+Dur die Anpassung verschiedener Attribute der `theme` Layer, können alle dargestellten Elemente verändert werden, dazu gehört auch die Legende, hier als Beispiel eine Veränderung der Position sowie verschiedene Formatierungen von Elementen der Legende.
+
 # Fortgeschritten
 
 ## Faceting
+
+Feceting erlaubt das Automatische Plotten mehrerer, getrennter Grafiken, differenziert bei einer Faktor-Variable.
 
 ```{r}
 set.seed(42)
@@ -463,7 +476,10 @@ plot +
   theme(legend.position = "bottom")
 ```
 
-## Trivariat
+Hier wurden zwei Regressionen geschätzt, die Variable `Group` dient zur Unterscheidung der jeweiligen Daten der Stichprobe, der Prognose (aka. Fitting), den Prognoseintervallen etc.\
+Der Befehl `facet_grid` dient nun dazu die Grafiken für die einzelnen Gruppen Tabellenförmig anzuordnen (hier nur zwei Spalten, Zeilenweise oder Tabellen-Darstellung ebenfalls möglich)
+
+## Trivariate Plots
 
 ```{r}
 fun <- function(x, z){-3 * x^2 - 4 * z^2}
@@ -478,6 +494,8 @@ plot <- ggplot(data, aes(x = x, y = y, z = z)) +
 plot
 ```
 
+Es wird eine 3D Funktion definiert, anschließend wird eine Tabelle aus (x, z)-Positionen generiert und dann für jedes Tupel ein z-Wert berechnet. Der Befehl `geom_contour` führt nun zu einer Darstellung der Höhenlinien.
+
 ```{r}
 library(viridis)
 library(rayshader)
@@ -488,3 +506,84 @@ plot_gg(mtplot, width=3.5, multicore = FALSE, windowsize = c(1400,866), sunangle
        zoom = 0.60, phi = 30, theta = 45)
 render_snapshot(clear = TRUE)
 ```
+
+## stats
+
+Die stats-Befehle erlauben das automatische Berechnen von einfachen Statistiken während dem Plotvorgang.
+
+
+
+## Sachen die man noch aufnehmen kann
+
+### stats()
+
+```{r}
+# Zur statistischen Transformation werden die stats in ggplot2 verwendet.
+# Hilfreiche Funktionen sind:
+# - stat_density() 
+# - stat_quantile()
+# - stat_bin()
+# - stat_summary()
+# - stat_unique()
+# - stat_smooth()
+
+# einfaches Beispiel:
+ggplot(iris,aes(Sepal.Length,Sepal.Width))+
+  geom_point()+ 
+  stat_smooth(method="lm")
+
+# Regressionsgerade fuer die einzelnen Spezien
+ggplot(iris,aes(Sepal.Length,Sepal.Width,color=factor(Species)))+
+  geom_point()+ 
+  stat_smooth(method="lm")
+
+# Uebersichtliche Gestaltung mit Hilfe von facet
+graph2 <- ggplot(iris, aes(Sepal.Length, Sepal.Width)) + geom_point()
+graph2 + facet_grid(. ~ Species) + stat_smooth(method = "lm")
+```
+
+
+### annotate()
+
+```{r}
+###########
+# annotate:
+
+# Mit annotate() k?nnen textliche Anmerkungen hinzugefuegt werden. 
+
+standard_text = "Anmerkung"
+plotmath_text <- "sum((x[i]-hat(x)), i==1, n)"
+graph2 <- ggplot(iris, aes(Sepal.Width, Sepal.Length)) + geom_point()
+graph2 + annotate("text", x = 3, y = 6, label = standard_text) + 
+  annotate("text", x = 4, y = 7, cex = 7, label = plotmath_text, parse = TRUE)
+
+###########
+# Themes:
+
+# Es besteht die M?glichkeit die Defaulteinstellung der ggplot Graphik durch
+# theme() zu ver?ndern. 
+
+graph2 <- ggplot(iris, aes(Sepal.Width, Sepal.Length)) + 
+  geom_point(aes(color = Species))
+
+graph2 + theme(panel.background = element_rect(fill = "green"), 
+          panel.grid.major = element_line(colour = "black"))
+```
+
+
+### autoplot()
+
+```{r}
+# Durch autoplot() k?nnen auch Prognosen abgenildet werden. 
+# Generierung eines ARIMA Modells.
+d.arima <- auto.arima(a10)
+
+# Erstellung einer Vorhersage mithilfe des Modells.
+d.forecast <- forecast(d.arima, level = c(95), h = 50)
+
+# Plot
+autoplot(d.forecast)
+autoplot(d.forecast, ts.colour = 'darkgrey', predict.colour = 'red',
+         predict.linetype = 'dashed', conf.int = FALSE)
+```
+
