@@ -507,6 +507,58 @@ plot_gg(mtplot, width=3.5, multicore = FALSE, windowsize = c(1400,866), sunangle
 render_snapshot(clear = TRUE)
 ```
 
+## annotate()
+
+Man kann Plots zusätzlich um Grafik- bzw. Textelemente erweitern mit der Funktion `annotate`.
+
+```{r}
+n <- 1000
+sigma1 <- matrix(c(1, 0, 0, 1.2), byrow = TRUE, nrow = 2)
+sigma2 <- matrix(c(2, 0, 0, 4), byrow = TRUE, nrow = 2)
+u1 <- mvrnorm(n = n, mu <- c(1, 2), Sigma = sigma1)
+u2 <-  mvrnorm(n = n, mu <- c(5, 8), Sigma = sigma2)
+
+
+data <- data.frame(rbind(cbind("Group1", u1), cbind("Group2", u2)))
+names(data) <- c("Group", "X", "Y")
+data$Group %<>% factor
+data$X %<>% as.numeric
+data$Y %<>% as.numeric
+
+plot <- ggplot(data = data) +
+  geom_point(aes(x = X, y = Y, colour = Group)) +
+  scale_color_manual(values = c("Group1" = "orange", "Group2" = "blue"))
+plot
+
+plot +
+  annotate("Text", x = max(data$X), y = max(data$Y), label = "MAX") +
+  annotate("Segment", x = 6, xend = 0, y = 0, yend = 8, color = "darkgreen") +
+  annotate("rect", xmin = quantile(data$X[data$Group == "Group1"], 0.25), 
+                  xmax = quantile(data$X[data$Group == "Group1"], 0.75),
+                  ymin = quantile(data$Y[data$Group == "Group1"], 0.25),
+                  ymax = quantile(data$Y[data$Group == "Group1"], 0.75), fill = "grey", alpha = 0.8)
+```
+
+
+### autoplot()
+
+```{r}
+library(tseries)
+library(ggfortify)
+library(forecast)
+data("USeconomic", package = "tseries")
+
+autoplot(USeconomic)
+
+model.arima <- auto.arima(USeconomic[, "rs"])
+
+forecast.arima <- forecast(model.arima, h = 50)
+
+autoplot(forecast.arima)
+```
+
+
+
 ## stats
 
 Die stats-Befehle erlauben das automatische Berechnen von einfachen Statistiken während dem Plotvorgang.
@@ -516,6 +568,40 @@ Die stats-Befehle erlauben das automatische Berechnen von einfachen Statistiken 
 ## Sachen die man noch aufnehmen kann
 
 ### stats()
+
+```{r}
+data <- data.frame(x = rnorm(100, mean = 0, sd = 1))
+
+plot <- ggplot(data, aes(sample = x)) +
+  stat_qq() +
+  stat_qq_line()
+
+plot
+
+
+n <- 1000
+sigma1 <- matrix(c(1, 0, 0, 1.2), byrow = TRUE, nrow = 2)
+sigma2 <- matrix(c(2, 0, 0, 4), byrow = TRUE, nrow = 2)
+u1 <- mvrnorm(n = n, mu <- c(1, 2), Sigma = sigma1)
+u2 <-  mvrnorm(n = n, mu <- c(5, 8), Sigma = sigma2)
+
+
+data <- data.frame(rbind(cbind("Group1", u1), cbind("Group2", u2)))
+names(data) <- c("Group", "X", "Y")
+data$Group %<>% factor
+data$X %<>% as.numeric
+data$Y %<>% as.numeric
+
+ggplot(data = data, aes(x = X, y = Y, colour = Group)) +
+  geom_point() +
+  scale_color_manual(values = c("Group1" = "orange", "Group2" = "blue")) +
+  stat_summary(mapping = aes(group = Group), color = "red")
+
+
+
+  
+```
+
 
 ```{r}
 # Zur statistischen Transformation werden die stats in ggplot2 verwendet.
@@ -543,47 +629,12 @@ graph2 + facet_grid(. ~ Species) + stat_smooth(method = "lm")
 ```
 
 
-### annotate()
-
-```{r}
-###########
-# annotate:
-
-# Mit annotate() k?nnen textliche Anmerkungen hinzugefuegt werden. 
-
-standard_text = "Anmerkung"
-plotmath_text <- "sum((x[i]-hat(x)), i==1, n)"
-graph2 <- ggplot(iris, aes(Sepal.Width, Sepal.Length)) + geom_point()
-graph2 + annotate("text", x = 3, y = 6, label = standard_text) + 
-  annotate("text", x = 4, y = 7, cex = 7, label = plotmath_text, parse = TRUE)
-
-###########
-# Themes:
-
-# Es besteht die M?glichkeit die Defaulteinstellung der ggplot Graphik durch
-# theme() zu ver?ndern. 
-
-graph2 <- ggplot(iris, aes(Sepal.Width, Sepal.Length)) + 
-  geom_point(aes(color = Species))
-
-graph2 + theme(panel.background = element_rect(fill = "green"), 
-          panel.grid.major = element_line(colour = "black"))
-```
 
 
-### autoplot()
 
-```{r}
-# Durch autoplot() k?nnen auch Prognosen abgenildet werden. 
-# Generierung eines ARIMA Modells.
-d.arima <- auto.arima(a10)
 
-# Erstellung einer Vorhersage mithilfe des Modells.
-d.forecast <- forecast(d.arima, level = c(95), h = 50)
 
-# Plot
-autoplot(d.forecast)
-autoplot(d.forecast, ts.colour = 'darkgrey', predict.colour = 'red',
-         predict.linetype = 'dashed', conf.int = FALSE)
-```
+
+
+
 
