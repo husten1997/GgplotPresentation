@@ -17,18 +17,23 @@ output:
 # Einführung
 
 -   ggplot2 basiert auf der Idee der "grammar of graphics"
+
 -   Demnach lässt sich jede Grafik aufbauen als Kombination von
+
     -   Daten
     -   Koordinatensystem
     -   "geoms"
 
 -   "geoms" sind dabei visuelle Repräsentationen der Daten (Punkte, Kreise, Flächen, Linien, etc)
+
 -   "geoms" haben Eigenschaften (sog. "aesthetics"), z.B. größe, farbe, x- und y-Position etc.
+
 -   die Daten werden auf die "aesthetics" gemapped\
 
 # Datenpräsentation: geom
 
 -   Art der visuellen Präsentation der Daten
+
     -   Balken
     -   Kreis
     -   Linien
@@ -37,11 +42,14 @@ output:
     -   etc.
 
 -   kann grob unterteilt werden in:
+
     -   Univariat
+
         -   diskret (faktor)
         -   stetig
 
     -   Bivariat
+
         -   x und y diskret
         -   x oder y diskret
         -   x und y stetig
@@ -439,7 +447,7 @@ plot +
         legend.background = element_rect(colour = "grey"))
 ```
 
-Dur die Anpassung verschiedener Attribute der `theme` Layer, können alle dargestellten Elemente verändert werden, dazu gehört auch die Legende, hier als Beispiel eine Veränderung der Position sowie verschiedene Formatierungen von Elementen der Legende.
+Durch die Anpassung verschiedener Attribute der `theme` Layer, können alle dargestellten Elemente verändert werden, dazu gehört auch die Legende, hier als Beispiel eine Veränderung der Position sowie verschiedene Formatierungen von Elementen der Legende.
 
 # Fortgeschritten
 
@@ -539,7 +547,6 @@ plot +
                   ymax = quantile(data$Y[data$Group == "Group1"], 0.75), fill = "grey", alpha = 0.8)
 ```
 
-
 ### autoplot()
 
 ```{r}
@@ -557,13 +564,9 @@ forecast.arima <- forecast(model.arima, h = 50)
 autoplot(forecast.arima)
 ```
 
-
-
 ## stats
 
 Die stats-Befehle erlauben das automatische Berechnen von einfachen Statistiken während dem Plotvorgang.
-
-
 
 ## Sachen die man noch aufnehmen kann
 
@@ -602,7 +605,6 @@ ggplot(data = data, aes(x = X, y = Y, colour = Group)) +
   
 ```
 
-
 ```{r}
 # Zur statistischen Transformation werden die stats in ggplot2 verwendet.
 # Hilfreiche Funktionen sind:
@@ -627,14 +629,3 @@ ggplot(iris,aes(Sepal.Length,Sepal.Width,color=factor(Species)))+
 graph2 <- ggplot(iris, aes(Sepal.Length, Sepal.Width)) + geom_point()
 graph2 + facet_grid(. ~ Species) + stat_smooth(method = "lm")
 ```
-
-
-
-
-
-
-
-
-
-
-
