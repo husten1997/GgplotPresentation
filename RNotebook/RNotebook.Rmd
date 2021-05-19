@@ -629,3 +629,24 @@ ggplot(iris,aes(Sepal.Length,Sepal.Width,color=factor(Species)))+
 graph2 <- ggplot(iris, aes(Sepal.Length, Sepal.Width)) + geom_point()
 graph2 + facet_grid(. ~ Species) + stat_smooth(method = "lm")
 ```
+
+
+```{r}
+
+## stats
+
+#Die stats-Befehle erlauben das automatische Berechnen von einfachen Statistiken während des Plotvorgangs.
+
+plot <- ggplot(data = mtcars) +
+  geom_point(aes(x = hp, y = mpg))
+
+plot +
+  stat_smooth(method = "lm", aes(x = hp, y = mpg))
+
+fun <- function(x) {0.1 * x^3 + 1.4 * x^2 - 4 * x}
+
+ggplot() +
+  stat_function(fun = fun, xlim = range(-15, 10))
+
+```
+
