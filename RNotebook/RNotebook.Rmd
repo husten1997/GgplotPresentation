@@ -630,7 +630,6 @@ graph2 <- ggplot(iris, aes(Sepal.Length, Sepal.Width)) + geom_point()
 graph2 + facet_grid(. ~ Species) + stat_smooth(method = "lm")
 ```
 
-
 ```{r}
 
 ## stats
@@ -649,4 +648,3 @@ ggplot() +
   stat_function(fun = fun, xlim = range(-15, 10))
 
 ```
-
